@@ -1,6 +1,7 @@
 import 'package:eval2_dsw21a1/pages/scrum.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:eval2_dsw21a1/pages/acercanosotros.dart';
 
 
 void main() {
