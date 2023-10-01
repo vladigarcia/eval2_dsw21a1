@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: MyHomePage(title: 'Lista de Productos'),
-  ));
-}
+import 'Crear__dato.dart'; 
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -17,205 +13,107 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // Función para obtener los productos
+  Future<List> getMensajes() async {
+    List chats = [];
+    CollectionReference collectionReference =
+    FirebaseFirestore.instance.collection("tb_productos");
+    QuerySnapshot mensajes = await collectionReference.get();
+    if (mensajes.docs.length != 0) {
+      for (var doc in mensajes.docs) {
+        print(doc.data());
+        chats.add(doc.data());
+      }
+    }
+    return chats;
+  }
+
+  // Función para actualizar la lista
+  void refreshData() {
+    setState(() {
+      // Llamamos a la función que obtiene los datos desde Firestore
+      getMensajes();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.blue,
         title: Text(widget.title),
-      ),
-      drawer: AppDrawer(), // Agrega el Drawer aquí
-      body: ProductList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateProduct()),
-          );
-        },
-        tooltip: 'Crear',
-        child: Icon(Icons.add_box),
-      ),
-    );
-  }
-}
-
-class AppDrawer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text(
-              'Opciones del Menú',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
-            ),
-          ),
-          ListTile(
-            title: Text('Opción 1'),
-            onTap: () {
-              // Aquí puedes agregar la lógica para manejar la opción 1
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => nuevodatos()),
+              ).then((_) {
+                // Después de regresar de la página de creación de datos,
+                // actualizamos la lista.
+                refreshData();
+              });
             },
           ),
-          ListTile(
-            title: Text('Opción 2'),
-            onTap: () {
-              // Aquí puedes agregar la lógica para manejar la opción 2
-            },
-          ),
-          // Agrega más ListTile según tus necesidades
         ],
       ),
-    );
-  }
-}
-
-class ProductList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection("tb_productos").snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error: ${snapshot.error}"),
-          );
-        } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
-            child: Text("No hay datos disponibles."),
-          );
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              final producto = snapshot.data!.docs[index];
-              final nombre = producto["nombre"] as String;
-              final precio = producto["precio"]?.toString() ?? "Precio no disponible";
-              final stock = producto["stock"]?.toString() ?? "Stock no disponible";
-              return Card(
-                elevation: 3.0,
-                child: ListTile(
-                  title: Text(nombre, style: TextStyle(fontSize: 18.0)),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Precio: $precio"),
-                      Text("Stock: $stock"),
-                    ],
+      body: FutureBuilder(
+        future: getMensajes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data?.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Text(
+                      "${snapshot.data?[index]["nombre"]}",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    subtitle: Text(
+                      "Precio: ${snapshot.data?[index]["precio"].toString()} - Stock: ${snapshot.data?[index]["stock"].toString()}",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
-                  onTap: () {
-
-                  },
-                ),
-              );
-            },
-          );
-        }
-      },
+                );
+              },
+            );
+          } else {
+            return const Center(
+              child: Text('No hay datos disponibles.'),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: refreshData,
+        tooltip: 'Refresh',
+        child: const Icon(Icons.refresh),
+      ),
     );
   }
 }
 
-class CreateProduct extends StatefulWidget {
-  @override
-  _CreateProductState createState() => _CreateProductState();
-}
-
-class _CreateProductState extends State<CreateProduct> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController priceController = TextEditingController();
-  TextEditingController stockController = TextEditingController();
-
-  Future<void> _createProduct() async {
-    String newName = nameController.text;
-    String newPrice = priceController.text;
-    String newStock = stockController.text;
-
-    if (newName.isNotEmpty && newPrice.isNotEmpty && newStock.isNotEmpty) {
-      try {
-        FirebaseFirestore firestore = FirebaseFirestore.instance;
-        String collectionName = 'tb_productos';
-
-        double price = double.parse(newPrice);
-        int stock = int.parse(newStock);
-
-        await firestore.collection(collectionName).add({
-          'nombre': newName,
-          'precio': price,
-          'stock': stock,
-        });
-
-        nameController.clear();
-        priceController.clear();
-        stockController.clear();
-        Navigator.pop(context);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Producto creado correctamente"),
-          ),
-        );
-      } catch (e) {
-        print("Error: $e");
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Por favor, ingresa todos los datos"),
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Crear Producto"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                hintText: 'Nombre del producto',
-              ),
-            ),
-            TextField(
-              controller: priceController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Precio del producto',
-              ),
-            ),
-            TextField(
-              controller: stockController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Stock del producto',
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _createProduct,
-              child: const Text("Guardar"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+void main() {
+  runApp(MaterialApp(
+    home: MyHomePage(title: 'Productos'),
+  ));
 }
