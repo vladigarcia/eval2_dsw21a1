@@ -27,10 +27,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return chats;
   }
 
-  // Función para actualizar la lista
   void refreshData() {
     setState(() {
-      // Llamamos a la función que obtiene los datos desde Firestore
       getMensajes();
     });
   }
