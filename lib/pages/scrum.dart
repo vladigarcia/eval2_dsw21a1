@@ -12,7 +12,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // Función para obtener los productos
   Future<List> getMensajes() async {
     List chats = [];
     CollectionReference collectionReference =
@@ -47,8 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 context,
                 MaterialPageRoute(builder: (context) => nuevodatos()),
               ).then((_) {
-                // Después de regresar de la página de creación de datos,
-                // actualizamos la lista.
                 refreshData();
               });
             },
@@ -76,18 +73,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: ListTile(
                     title: Text(
                       "${snapshot.data?[index]["nombre"]}",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
                       ),
                     ),
-                    subtitle: Text(
-                      "Precio: ${snapshot.data?[index]["precio"].toString()} - Stock: ${snapshot.data?[index]["stock"].toString()}",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
+                    subtitle: Row(
+                      children: [
+                        Icon(Icons.attach_money, color: Colors.green), // Icono de dinero para el precio
+                        Text(
+                          "Precio: ${snapshot.data?[index]["precio"].toString()} - ",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Icon(Icons.store, color: Colors.orange), // Icono de tienda para el stock
+                        Text(
+                          "Stock: ${snapshot.data?[index]["stock"].toString()}",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -110,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: MyHomePage(title: 'Productos'),
   ));
 }

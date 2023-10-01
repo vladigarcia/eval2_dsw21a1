@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eval2_dsw21a1/pages/Crear__dato.dart';
 import 'package:eval2_dsw21a1/pages/scrum.dart';
+import 'package:eval2_dsw21a1/pages/acerca_nosotros.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'base de datos',
       initialRoute: '/',
       routes: {
-        '/Crear': (context) => const nuevodatos()
+        '/Crear': (context) => const nuevodatos(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
