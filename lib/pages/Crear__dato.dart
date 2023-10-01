@@ -23,32 +23,45 @@ class _nuevodatosState extends State<nuevodatos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Nuevos Datos"),
+        title: Text("Agregar Producto"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextField(
+            SizedBox(height: 20),
+            Text(
+              "Ingrese los datos del producto",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            TextFormField(
               controller: nameController,
-              decoration: const InputDecoration(
-                hintText: 'Nombre del producto',
+              decoration: InputDecoration(
+                labelText: 'Nombre del producto',
+                border: OutlineInputBorder(),
               ),
             ),
-            TextField(
+            SizedBox(height: 20),
+            TextFormField(
               controller: priceController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Precio del producto',
+              decoration: InputDecoration(
+                labelText: 'Precio del producto',
+                border: OutlineInputBorder(),
               ),
             ),
-            TextField(
+            SizedBox(height: 20),
+            TextFormField(
               controller: stockController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Stock del producto',
+              decoration: InputDecoration(
+                labelText: 'Stock del producto',
+                border: OutlineInputBorder(),
               ),
             ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 String newName = nameController.text;
@@ -89,7 +102,7 @@ class _nuevodatosState extends State<nuevodatos> {
                   );
                 }
               },
-              child: const Text("Guardar"),
+              child: Text("Guardar"),
             ),
           ],
         ),
@@ -110,22 +123,43 @@ class _ScrumPageState extends State<ScrumPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Scrum"),
+        title: Text("Lista de Productos"),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('tb_productos').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
           var productos = snapshot.data!.docs;
           return ListView.builder(
             itemCount: productos.length,
             itemBuilder: (context, index) {
               var producto = productos[index];
-              return ListTile(
-                title: Text(producto['nombre']),
-                subtitle: Text("Precio: ${producto['precio']}, Stock: ${producto['stock']}"),
+              return Card(
+                elevation: 3,
+                margin: EdgeInsets.all(8),
+                child: ListTile(
+                  title: Text(
+                    producto['nombre'],
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Precio: \$${producto['precio'].toStringAsFixed(2)}",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      Text(
+                        "Stock: ${producto['stock']}",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );
