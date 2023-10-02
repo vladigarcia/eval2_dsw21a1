@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'Crear__dato.dart';
+import 'acerca_nosotros.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -50,6 +51,15 @@ class _MyHomePageState extends State<MyHomePage> {
               });
             },
           ),
+          IconButton(
+            icon: Icon(Icons.info),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => acercanosotros()),
+              );
+            },
+          ),
         ],
       ),
       body: FutureBuilder(
@@ -81,15 +91,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     subtitle: Row(
                       children: [
-                        Icon(Icons.attach_money, color: Colors.green), // Icono de dinero para el precio
+                        Icon(Icons.attach_money, color: Colors.green),
                         Text(
-                          "Precio: ${snapshot.data?[index]["precio"].toString()} - ",
+                          "Precio: ${snapshot.data?[index]["precio"].toString()} | ",
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
                           ),
                         ),
-                        Icon(Icons.store, color: Colors.orange), // Icono de tienda para el stock
+                        Icon(Icons.store, color: Colors.orange),
                         Text(
                           "Stock: ${snapshot.data?[index]["stock"].toString()}",
                           style: const TextStyle(
