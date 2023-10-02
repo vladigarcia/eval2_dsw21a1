@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: refreshData,
-        tooltip: 'Refresh',
+        tooltip: 'Refrescar',
         child: const Icon(Icons.refresh),
       ),
     );

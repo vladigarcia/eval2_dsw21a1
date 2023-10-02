@@ -37,7 +37,7 @@ class _acercanosotrosState extends State<acercanosotros> {
                   children: <Widget>[
                     Text('Nombre: Eduardo Vladimir'),
                     Text('Apellido: Garcia Mestizo'),
-                    Text('Correo: eduardo@example.com'),
+                    Text('Correo: eduardo.garcia22@gmail.com'),
                   ],
                 ),
               ],
@@ -61,7 +61,7 @@ class _acercanosotrosState extends State<acercanosotros> {
                   children: <Widget>[
                     Text('Nombre: Jairo Enoc'),
                     Text('Apellido: Lopez Montano'),
-                    Text('Correo: jairo@example.com'),
+                    Text('Correo: jairo.lopez22@itca.edu.sv'),
                   ],
                 ),
               ],
